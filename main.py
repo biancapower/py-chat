@@ -27,6 +27,7 @@ def on_button_clicked():
     global button_clicks
     button_clicks += 1
 
+    # alternative: label.setText(f"Button was clicked {button_clicks} times")
     label.setText("Button was clicked " + str(button_clicks) + " times")
 
 button.clicked.connect(on_button_clicked)
