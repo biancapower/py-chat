@@ -1,6 +1,9 @@
 ### Client-server chat application built using PyQt ###
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushButton
 
+# counter for number of clicks
+button_clicks = 0
+
 # Create a GUI application
 app = QApplication([])
 
@@ -19,6 +22,14 @@ label = QLabel('Hello, Cyber')
 
 # Create a button
 button = QPushButton('Click me!')
+
+def on_button_clicked():
+    global button_clicks
+    button_clicks += 1
+
+    label.setText("Button was clicked " + str(button_clicks) + " times")
+
+button.clicked.connect(on_button_clicked)
 
 # Add widgets to the layout
 layout.addWidget(label)
