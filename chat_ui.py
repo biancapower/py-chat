@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QSp
 from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit
 from PyQt5.QtGui import QPalette
 
+from listener import Listener
+
 
 # NAMING CONVENTION we will use for PyQt widgets
 # txt_ is a multi line text box
@@ -132,6 +134,14 @@ class ChatUI():
     def btn_listen_clicked(self):
         # Currently when listen button is clicked, show the chat pane
         self.window.setCentralWidget(self.chat_pane)
+
+        self.txt_history.append('Waiting for connection...\n')
+
+        self.listener = Listener(5000)
+
+        self.connection = self.listener.get_connection()
+
+
 
 
 
