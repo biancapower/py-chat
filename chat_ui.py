@@ -101,7 +101,7 @@ Batman: Crime"""
         chat_layout.addWidget(lbl_message)
         chat_layout.addWidget(inp_message)
 
-        chat_pane.setLayout(layout)
+        chat_pane.setLayout(chat_layout)
 
 
         # Everything has been set up, create the window
@@ -110,7 +110,7 @@ Batman: Crime"""
         # Store the things we will need later in attributes
         self.app = app
         self.window = window
-        self.layout = layout
+        self.chat_layout = chat_layout
         self.chat_pane = chat_pane
         self.inp_message = inp_message
         self.txt_history = txt_history
