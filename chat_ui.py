@@ -1,7 +1,18 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QSpacerItem
 from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit
 from PyQt5.QtGui import QPalette
+
+
+# NAMING CONVENTION we will use for PyQt widgets
+# txt_ is a multi line text box
+# inp_ is an input box
+# btn_ is a button
+# lbl_ is a label
+
+
+
+
 
 class ChatUI():
     """This class encapsulates out application"""
@@ -28,22 +39,49 @@ Batman: Crime"""
         app.setPalette(palette)
 
         # Create our root window
-        window = QWidget()
+        window = QMainWindow()
 
-        # Create a vertical layout and embed it in the root window
-        layout = QVBoxLayout()
-        window.setLayout(layout)
-
-        
+        # Create the pane that allows the user to initiate a connection
+        connection_pane = QWidget()
 
 
+        # Create a layout for the connection pane
+        connection_layout = QVBoxLayout()
+        connection_pane.setLayout(connection_layout)
 
-        # NAMING CONVETION
-        # txt_ is a multi line text box
-        # inp_ is an input box
-        # btn_ is a button
-        # lbl_ is a label
+        # for the user to type an IP address and connect to it
+        lbl_connect_address = QLabel('IP address')
+        inp_connect_address = QLineEdit()
 
+        btn_connect = QPushButton('Connect')
+        btn_connect.clicked.connect(self.btn_connect_clicked)
+
+        # for the user to listen for an incoming connection
+        btn_listen = QPushButton('Wait for connection')
+        btn_listen.clicked.connect(self.btn_listen_clicked)
+
+
+        # Add all these widgets to the connection pane layout
+        connection_layout.addWidget(lbl_connect_address)
+        connection_layout.addWidget(inp_connect_address)
+        connection_layout.addWidget(btn_connect)
+
+        # Create space between the client options and server options
+        connection_layout.addSpacing(30)
+
+        connection_layout.addWidget(btn_listen)
+
+        # Initially display the connection pane
+        window.setCentralWidget(connection_pane)
+
+
+        # Create the pane that allows the user to chat
+        chat_pane = QWidget()
+
+        # Create a layout for the chat pane
+        chat_layout = QVBoxLayout()
+
+        # Create the chat history box
         txt_history = QTextEdit()
         txt_history.setPlainText(initial_history)
         txt_history.setReadOnly(True)
@@ -55,28 +93,27 @@ Batman: Crime"""
         inp_message = QLineEdit()
 
         inp_message.returnPressed.connect(self.send)
-        
-
-        # Create a button
-        #button = QPushButton('Click me!')
-        #button.clicked.connect(self.button_clicked)
-
-        # Add widgets to the layout
-        #layout.addWidget(button)
-        layout.addWidget(txt_history)
-
-        layout.addWidget(lbl_message)
-        layout.addWidget(inp_message)
 
 
+        # Add widgets to the chat pane layout
+        chat_layout.addWidget(txt_history)
+
+        chat_layout.addWidget(lbl_message)
+        chat_layout.addWidget(inp_message)
+
+        chat_pane.setLayout(layout)
+
+
+        # Everything has been set up, create the window
         window.show()
 
+        # Store the things we will need later in attributes
         self.app = app
         self.window = window
         self.layout = layout
+        self.chat_pane = chat_pane
         self.inp_message = inp_message
         self.txt_history = txt_history
-        #self.button = button
 
     def run(self):
         # Enter the application's main loop
@@ -84,6 +121,15 @@ Batman: Crime"""
         self.app.exec_()
 
         print("Application was closed")
+
+    def btn_connect_clicked(self):
+        pass
+
+    def btn_listen_clicked(self):
+        # Currently when listen button is clicked, show the chat pane
+        self.window.setCentralWidget(self.chat_pane)
+
+
 
     def send(self):
         user_typed = self.inp_message.text()
