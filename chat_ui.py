@@ -22,13 +22,6 @@ class ChatUI():
         # counter for number of clicks
         self.button_clicks = 0
 
-
-        initial_history = """Welcome to Hackchat
-
-Batman: Hi there
-You: What's up?
-Batman: Crime"""
-
         # Create a GUI application
         app = QApplication([])
 
@@ -41,9 +34,29 @@ Batman: Crime"""
         # Create our root window
         window = QMainWindow()
 
+        self.create_connection_pane()
+        self.create_chat_pane()
+
+        # Initially display the connection pane
+        window.setCentralWidget(self.connection_pane)
+
+        # Everything has been set up, create the window
+        window.show()
+
+        # Store the things we will need later in attributes
+        self.app = app
+        self.window = window
+
+    def run(self):
+        # Enter the application's main loop
+        # This method call doesn't end until the main window is closed
+        self.app.exec_()
+
+        print("Application was closed")
+
+    def create_connection_pane(self):
         # Create the pane that allows the user to initiate a connection
         connection_pane = QWidget()
-
 
         # Create a layout for the connection pane
         connection_layout = QVBoxLayout()
@@ -71,10 +84,10 @@ Batman: Crime"""
 
         connection_layout.addWidget(btn_listen)
 
-        # Initially display the connection pane
-        window.setCentralWidget(connection_pane)
+        self.connection_layout = connection_layout
+        self.connection_pane = connection_pane
 
-
+    def create_chat_pane(self):
         # Create the pane that allows the user to chat
         chat_pane = QWidget()
 
@@ -83,7 +96,7 @@ Batman: Crime"""
 
         # Create the chat history box
         txt_history = QTextEdit()
-        txt_history.setPlainText(initial_history)
+        txt_history.setPlainText('')
         txt_history.setReadOnly(True)
 
         # Create a text display
@@ -104,23 +117,14 @@ Batman: Crime"""
         chat_pane.setLayout(chat_layout)
 
 
-        # Everything has been set up, create the window
-        window.show()
-
-        # Store the things we will need later in attributes
-        self.app = app
-        self.window = window
-        self.chat_layout = chat_layout
-        self.chat_pane = chat_pane
         self.inp_message = inp_message
         self.txt_history = txt_history
 
-    def run(self):
-        # Enter the application's main loop
-        # This method call doesn't end until the main window is closed
-        self.app.exec_()
 
-        print("Application was closed")
+        self.chat_layout = chat_layout
+        self.chat_pane = chat_pane
+
+
 
     def btn_connect_clicked(self):
         pass
