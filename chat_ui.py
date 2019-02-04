@@ -176,6 +176,8 @@ class ChatUI():
         # make the input box blank again
         self.inp_message.setText(None)
 
+        self.connection.send(bytes(user_typed, 'utf-8'))
+
     def button_clicked(self):
         self.button_clicks += 1
 
