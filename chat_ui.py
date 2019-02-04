@@ -1,9 +1,9 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QSpacerItem
 from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit
 from PyQt5.QtGui import QPalette
 
-from listener import Listener
+from network import Network
 
 
 # NAMING CONVENTION we will use for PyQt widgets
@@ -48,6 +48,13 @@ class ChatUI():
         # Store the things we will need later in attributes
         self.app = app
         self.window = window
+
+        self.timer = QTimer()
+        self.timer.start(100)
+        self.timer.timeout.connect(self.tick)
+
+        self.accepting = False
+        self.receiving = False
 
     def run(self):
         # Enter the application's main loop
@@ -126,6 +133,21 @@ class ChatUI():
         self.chat_layout = chat_layout
         self.chat_pane = chat_pane
 
+    def tick(self):
+
+        if self.accepting:
+            self.connection = self.listener.try_get_connection()
+            if self.connection is not None:
+                self.accepting = False
+                self.receiving = True
+                self.txt_history.append('Connected!\n')
+
+        elif self.receiving:
+            they_sent = self.connection.try_receive()
+            if they_sent is not None:
+                display = 'Them: ' + str(they_sent, 'utf-8')
+                self.txt_history.append(display)
+
 
 
     def btn_connect_clicked(self):
@@ -135,12 +157,11 @@ class ChatUI():
         # Currently when listen button is clicked, show the chat pane
         self.window.setCentralWidget(self.chat_pane)
 
-        self.txt_history.append('Waiting for connection...\n')
+        self.txt_history.append('Waiting for connection...')
 
-        self.listener = Listener(5000)
+        self.listener = Network.Listener(5000)
 
-        self.connection = self.listener.get_connection()
-
+        self.accepting = True
 
 
 
