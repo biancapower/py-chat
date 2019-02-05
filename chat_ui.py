@@ -153,10 +153,10 @@ class ChatUI():
 
         elif self.connection is not None:
             self.connection.try_connect()
-            print('b', self.connection.connected)
             if self.connection.connected:
                 self.receiving = True
-                print('REAIUCDSKJLHFLKJDSHLIUEGH')
+                self.txt_history.append('Connected!\n')
+
 
 
     def btn_connect_clicked(self):

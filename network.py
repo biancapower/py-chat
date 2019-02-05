@@ -17,6 +17,8 @@ class Network():
                 self.port = port
 
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.socket.setblocking(0)
+
 
                 self.try_connect()
                 self.connected = False
@@ -28,15 +30,12 @@ class Network():
             """tries to connect to the host and port specified in the constructor
             and sets self.connected to True if successful"""
 
-            (inputs_ready, dontcare, dontcare) = select.select([self.socket], [], [], 0)
-            print(inputs_ready)
-
-            if len(inputs_ready) != 0:
+            try:
                 self.socket.connect((self.host, int(self.port)))
-                print('SETTING TO TRUE!!!!!!!!!!!')
                 self.connected = True
-                print('a', self.connected)
-            print('returning')
+            except BlockingIOError as e:
+                pass
+
 
         def send(self, bytes):
             """sends some data (a bytes object) to the other host"""
@@ -77,4 +76,4 @@ class Network():
 
             (client_socket, dontcare) = self.socket.accept()
 
-            return Network.Connection(socket = client_socket)
+            return Network.Connection(socket_ = client_socket)
