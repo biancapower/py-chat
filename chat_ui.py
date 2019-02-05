@@ -80,6 +80,8 @@ class ChatUI():
         btn_connect = QPushButton('Connect')
         btn_connect.clicked.connect(self.btn_connect_clicked)
 
+        lbl_ip_address = QLabel(Network.get_ip())
+
         # for the user to listen for an incoming connection
         btn_listen = QPushButton('Wait for connection')
         btn_listen.clicked.connect(self.btn_listen_clicked)
@@ -93,6 +95,7 @@ class ChatUI():
         # Create space between the client options and server options
         connection_layout.addSpacing(30)
 
+        connection_layout.addWidget(lbl_ip_address)
         connection_layout.addWidget(btn_listen)
 
         self.connection_layout = connection_layout
