@@ -55,6 +55,7 @@ class ChatUI():
 
         self.accepting = False
         self.receiving = False
+        self.connection = None
 
     def run(self):
         # Enter the application's main loop
@@ -74,6 +75,7 @@ class ChatUI():
         # for the user to type an IP address and connect to it
         lbl_connect_address = QLabel('IP address')
         inp_connect_address = QLineEdit()
+        inp_connect_address.setText('localhost')
 
         btn_connect = QPushButton('Connect')
         btn_connect.clicked.connect(self.btn_connect_clicked)
@@ -95,6 +97,7 @@ class ChatUI():
 
         self.connection_layout = connection_layout
         self.connection_pane = connection_pane
+        self.inp_connect_address = inp_connect_address
 
     def create_chat_pane(self):
         # Create the pane that allows the user to chat
@@ -141,17 +144,30 @@ class ChatUI():
                 self.accepting = False
                 self.receiving = True
                 self.txt_history.append('Connected!\n')
-
+        
         elif self.receiving:
             they_sent = self.connection.try_receive()
             if they_sent is not None:
                 display = 'Them: ' + str(they_sent, 'utf-8')
                 self.txt_history.append(display)
 
+        elif self.connection is not None:
+            self.connection.try_connect()
+            print('b', self.connection.connected)
+            if self.connection.connected:
+                self.receiving = True
+                print('REAIUCDSKJLHFLKJDSHLIUEGH')
 
 
     def btn_connect_clicked(self):
-        pass
+        # When connect button is clicked, show the chat pane
+        self.window.setCentralWidget(self.chat_pane)
+
+        self.txt_history.append('Connecting...')
+
+        self.connection = Network.Connection(self.inp_connect_address.text(), 5000)
+
+
 
     def btn_listen_clicked(self):
         # Currently when listen button is clicked, show the chat pane

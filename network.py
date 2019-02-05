@@ -7,12 +7,36 @@ class Network():
     class Connection():
         """Encapsulates a connection to a remote host"""
 
-        def __init__(self, socket):
+        def __init__(self, host = None, port = None, socket_ = None):
 
-            self.socket = socket
+            if socket_ is not None:
+                self.socket = socket_
+                self.connected = True
+            elif host is not None:
+                self.host = host
+                self.port = port
 
-        def connect(self): #???
-            pass
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+                self.try_connect()
+                self.connected = False
+
+            else:
+                raise TypeError()
+
+        def try_connect(self):
+            """tries to connect to the host and port specified in the constructor
+            and sets self.connected to True if successful"""
+
+            (inputs_ready, dontcare, dontcare) = select.select([self.socket], [], [], 0)
+            print(inputs_ready)
+
+            if len(inputs_ready) != 0:
+                self.socket.connect((self.host, int(self.port)))
+                print('SETTING TO TRUE!!!!!!!!!!!')
+                self.connected = True
+                print('a', self.connected)
+            print('returning')
 
         def send(self, bytes):
             """sends some data (a bytes object) to the other host"""
@@ -53,4 +77,4 @@ class Network():
 
             (client_socket, dontcare) = self.socket.accept()
 
-            return Network.Connection(client_socket)
+            return Network.Connection(socket = client_socket)
