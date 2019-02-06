@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QSpacerItem
-from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem
+from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit, QRadioButton
 from PyQt5.QtGui import QPalette
 
 from network import Network
@@ -12,6 +12,26 @@ from network import Network
 # btn_ is a button
 # lbl_ is a label
 
+
+
+def make_container_widget(widgets, vertical = True):
+    """Takes a list of widgets and creates a vertical or horizontal kayout
+       with the widgets in it."""
+
+    new_widget = QWidget()
+
+    if vertical:
+        new_layout = QVBoxLayout()
+    else:
+        new_layout = QHBoxLayout()
+    
+    for widget in widgets:
+        new_layout.addWidget(widget)
+    
+    new_widget.setLayout(new_layout)
+
+    return new_widget
+    
 
 
 
@@ -66,11 +86,24 @@ class ChatUI():
 
     def create_connection_pane(self):
         # Create the pane that allows the user to initiate a connection
-        connection_pane = QWidget()
 
-        # Create a layout for the connection pane
-        connection_layout = QVBoxLayout()
-        connection_pane.setLayout(connection_layout)
+        # choose listener or client radio buttons
+        rad_listen  = QRadioButton('Wait for a connection')
+        rad_connect = QRadioButton('Connect to...')
+
+        rad_listen.setChecked(True)
+
+        # Hideable listen pane
+
+        # displays the IP address of the user
+        lbl_ip_address = QLabel(Network.get_ip())
+
+        # for the user to listen for an incoming connection
+        btn_listen = QPushButton('Wait for connection')
+        btn_listen.clicked.connect(self.btn_listen_clicked)
+
+        listen_pane = make_container_widget([lbl_ip_address, btn_listen])
+
 
         # for the user to type an IP address and connect to it
         lbl_connect_address = QLabel('IP address')
@@ -80,25 +113,29 @@ class ChatUI():
         btn_connect = QPushButton('Connect')
         btn_connect.clicked.connect(self.btn_connect_clicked)
 
-        lbl_ip_address = QLabel(Network.get_ip())
-
-        # for the user to listen for an incoming connection
-        btn_listen = QPushButton('Wait for connection')
-        btn_listen.clicked.connect(self.btn_listen_clicked)
+        connect_pane = make_container_widget([lbl_connect_address, inp_connect_address, btn_connect])
 
 
-        # Add all these widgets to the connection pane layout
-        connection_layout.addWidget(lbl_connect_address)
-        connection_layout.addWidget(inp_connect_address)
-        connection_layout.addWidget(btn_connect)
+        # assemble everything into a container
+        connection_pane = make_container_widget([rad_listen, rad_connect, listen_pane, connect_pane])
 
-        # Create space between the client options and server options
-        connection_layout.addSpacing(30)
+        # set up the radio buttons to control which pane is visible
+        def show_listen_pane():
+            connect_pane.hide()
+            connection_pane.adjustSize()
+            listen_pane.show()
 
-        connection_layout.addWidget(lbl_ip_address)
-        connection_layout.addWidget(btn_listen)
+        def show_client_pane():
+            listen_pane.hide()
+            connection_pane.adjustSize()
+            connect_pane.show()
+        
+        rad_listen.clicked.connect(show_listen_pane)
+        rad_connect.clicked.connect(show_client_pane)
 
-        self.connection_layout = connection_layout
+        show_listen_pane()
+
+
         self.connection_pane = connection_pane
         self.inp_connect_address = inp_connect_address
 
@@ -196,9 +233,3 @@ class ChatUI():
         self.inp_message.setText(None)
 
         self.connection.send(bytes(user_typed, 'utf-8'))
-
-    def button_clicked(self):
-        self.button_clicks += 1
-
-        # alternative: label.setText(f"Button was clicked {button_clicks} times")
-        self.label.setText("Button was clicked " + str(self.button_clicks) + " times")
